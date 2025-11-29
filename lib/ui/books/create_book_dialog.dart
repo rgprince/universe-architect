@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../data/database.dart';
 import '../../data/providers/database_provider.dart';
-import '../../services/cover_image_service.dart';
 import '../../services/preferences_service.dart';
 import '../universes/universes_screen.dart';
 
@@ -20,10 +19,8 @@ class CreateBookDialog extends ConsumerStatefulWidget {
 class _CreateBookDialogState extends ConsumerState<CreateBookDialog> {
   final _titleController = TextEditingController();
   final _synopsisController = TextEditingController();
-  final _coverService = CoverImageService();
   final _prefs = PreferencesService();
   
-  String? _coverImagePath;
   String _writingMode = 'simple'; // simple or scene
   
   @override
@@ -57,10 +54,6 @@ class _CreateBookDialogState extends ConsumerState<CreateBookDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cover Image Picker
-              _buildCoverPicker(),
-              const SizedBox(height: 16),
-              
               // Title
               TextField(
                 controller: _titleController,
@@ -107,100 +100,7 @@ class _CreateBookDialogState extends ConsumerState<CreateBookDialog> {
     );
   }
   
-  Widget _buildCoverPicker() {
-    return GestureDetector(
-      onTap: _pickCover,
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade400),
-        ),
-        child: _coverImagePath == null
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_photo_alternate, size: 48, color: Colors.grey.shade600),
-                  const SizedBox(height: 8),
-                  Text('Tap to add cover (400x600)', style: TextStyle(color: Colors.grey.shade600)),
-                ],
-              )
-            : Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      File(_coverImagePath!),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () {
-                        setState(() {
-                          _coverImagePath = null;
-                        });
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.black54,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-  
-  Widget _buildWritingModeSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Writing Mode',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        RadioListTile<String>(
-          title: const Text('Simple Mode'),
-          subtitle: const Text('Just write chapters, no structural planning'),
-          value: 'simple',
-          groupValue: _writingMode,
-          onChanged: (value) {
-            setState(() {
-              _writingMode = value!;
-            });
-          },
-        ),
-        RadioListTile<String>(
-          title: const Text('Scene Mode'),
-          subtitle: const Text('Organized scenes with POV, locations, status tracking'),
-          value: 'scene',
-          groupValue: _writingMode,
-          onChanged: (value) {
-            setState(() {
-              _writingMode = value!;
-            });
-          },
-        ),
-      ],
-    );
-  }
-  
-  Future<void> _pickCover() async {
-    final path = await _coverService.pickAndCropCover();
-    if (path != null) {
-      setState(() {
-        _coverImagePath = path;
-      });
-    }
-  }
+
   
   Future<void> _createBook() async {
     if (_titleController.text.trim().isEmpty) {
@@ -227,7 +127,7 @@ class _CreateBookDialogState extends ConsumerState<CreateBookDialog> {
         synopsis: drift.Value(_synopsisController.text.trim().isNotEmpty 
             ? _synopsisController.text.trim() 
             : null),
-        coverImagePath: drift.Value(_coverImagePath),
+        coverImagePath: const drift.Value(null), // Cover images disabled
         writingMode: drift.Value(_writingMode),
       ),
     );
