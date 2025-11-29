@@ -74,9 +74,9 @@ dependencies:
   fl_chart: ^0.70.1               # Analytics charts
   google_fonts: ^6.2.1            # Custom fonts
   
-  # v3.0 Features
-  image_picker: ^1.1.2            # Cover image selection
-  image_cropper: 7.1.0            # Cover image cropping (downgraded for compatibility)
+  # v3.0 Features (temporarily removed due to dependency conflicts)
+  # image_picker: ^1.1.2
+  # image_cropper: 7.1.0
 
 dev_dependencies:
   flutter_test:
