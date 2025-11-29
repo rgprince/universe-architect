@@ -53,12 +53,10 @@ class EditorScreen extends ConsumerWidget {
       body: Column(
         children: [
           if (!isHtmlView)
-            Expanded(
-              child: QuillToolbar.simple(
+            QuillToolbar.simple(
+              configurations: QuillSimpleToolbarConfigurations(
                 controller: controller,
-                configurations: const QuillSimpleToolbarConfigurations(
-                  sharedConfigurations: QuillSharedConfigurations(),
-                ),
+                sharedConfigurations: const QuillSharedConfigurations(),
               ),
             ),
           Expanded(

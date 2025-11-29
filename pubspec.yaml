@@ -76,7 +76,7 @@ dependencies:
   
   # v3.0 Features
   image_picker: ^1.1.2            # Cover image selection
-  image_cropper: ^8.0.2           # Cover image cropping (400x600)
+  image_cropper: 7.1.0            # Cover image cropping (downgraded for compatibility)
 
 dev_dependencies:
   flutter_test:
