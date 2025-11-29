@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,11 +16,14 @@ import 'tables/scenes_v3.dart';
 import 'tables/snapshots.dart';
 import 'tables/writing_sessions.dart';
 import 'tables/ai_conversations.dart';
+import 'tables/power_systems.dart';
+import 'tables/timeline_events.dart';
+import 'tables/planets.dart';
 
 part 'database.g.dart';
 
 /// Main database configuration for Universe Architect
-/// v3.5: Added AiConversations, AiMessages, chapter status
+/// v4.0: Added PowerSystems, TimelineEvents, Planets for novel universe features
 @DriftDatabase(tables: [
   Universes,
   Books,
@@ -32,12 +36,15 @@ part 'database.g.dart';
   WritingSessions,
   AiConversations,
   AiMessages,
+  PowerSystems,
+  TimelineEvents,
+  Planets,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3; // v3.5 schema
+  int get schemaVersion => 4; // v4.0 schema
   
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -67,6 +74,19 @@ class AppDatabase extends _$AppDatabase {
         
         // Add status column to Chapters
         await m.addColumn(chapters, chapters.status);
+      }
+      
+      if (from < 4) {
+        // v3 to v4 migration (v3.5 to v4.0) - Novel universe features
+        await m.createTable(powerSystems);
+        await m.createTable(timelineEvents);
+        await m.createTable(planets);
+        
+        // Add new columns to Entities table
+        await m.addColumn(entities, entities.planetId);
+        await m.addColumn(entities, entities.currentAge);
+        await m.addColumn(entities, entities.status);
+        await m.addColumn(entities, entities.firstAppearedIn);
       }
     },
   );
@@ -161,6 +181,49 @@ class AppDatabase extends _$AppDatabase {
     return (select(entities)
           ..where((e) => e.universeId.equals(universeId) & e.name.isIn(names)))
         .get();
+  }
+  
+  // Novel Universe Feature Queries (v4.0)
+  
+  /// Get power system for a specific character entity
+  Future<PowerSystem?> getPowerSystemForEntity(int entityId) {
+    return (select(powerSystems)..where((p) => p.entityId.equals(entityId)))
+        .getSingleOrNull();
+  }
+  
+  /// Get all timeline events for a universe
+  Future<List<TimelineEvent>> getTimelineEventsForUniverse(int universeId) {
+    return (select(timelineEvents)
+          ..where((t) => t.universeId.equals(universeId))
+          ..orderBy([(t) => OrderingTerm.asc(t.sortOrder)]))
+        .get();
+  }
+  
+  /// Get all planets for a universe
+  Future<List<Planet>> getPlanetsForUniverse(int universeId) {
+    return (select(planets)..where((p) => p.universeId.equals(universeId)))
+        .get();
+  }
+  
+  /// Get all characters currently on a specific planet
+  Future<List<Entity>> getCharactersOnPlanet(int planetId) {
+    return (select(entities)
+          ..where((e) => e.planetId.equals(planetId) & e.type.equals('character')))
+        .get();
+  }
+  
+  /// Get timeline events involving a specific entity
+  Future<List<TimelineEvent>> getTimelineEventsForEntity(int entityId) async {
+    final allEvents = await select(timelineEvents).get();
+    // Filter events where this entity is involved (stored in JSON array)
+    return allEvents.where((event) {
+      try {
+        final ids = (jsonDecode(event.involvedEntityIdsJson) as List).cast<int>();
+        return ids.contains(entityId);
+      } catch (e) {
+        return false;
+      }
+    }).toList();
   }
 }
 

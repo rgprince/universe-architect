@@ -7,6 +7,9 @@ enum EntityType {
   location,
   item,
   event,
+  planet,        // Planetary bodies in the universe hierarchy
+  organization,  // ZERO, VIP factions, etc.
+  technique,     // Atomic Prayer, Ashes of Fire, etc.
 }
 
 /// Type converter for EntityType enum
@@ -34,4 +37,10 @@ class Entities extends Table {
   TextColumn get type => text().map(const EntityTypeConverter())();
   TextColumn get name => text().withLength(min: 1, max: 255)();
   TextColumn get attributesJson => text().withDefault(const Constant('{}'))();
+  
+  // Novel-specific extensions (v4)
+  IntColumn get planetId => integer().nullable()(); // Reference to Planets table
+  IntColumn get currentAge => integer().nullable()(); // Character's age
+  TextColumn get status => text().nullable()(); // "Alive", "Dead", "Unknown"
+  TextColumn get firstAppearedIn => text().nullable()(); // Novel name
 }
