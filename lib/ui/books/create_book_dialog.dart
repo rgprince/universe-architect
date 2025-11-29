@@ -100,7 +100,40 @@ class _CreateBookDialogState extends ConsumerState<CreateBookDialog> {
     );
   }
   
-
+  Widget _buildWritingModeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Writing Mode',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        RadioListTile<String>(
+          title: const Text('Simple Mode'),
+          subtitle: const Text('Just write chapters, no structural planning'),
+          value: 'simple',
+          groupValue: _writingMode,
+          onChanged: (value) {
+            setState(() {
+              _writingMode = value!;
+            });
+          },
+        ),
+        RadioListTile<String>(
+          title: const Text('Scene Mode'),
+          subtitle: const Text('Organized scenes with POV, locations, status tracking'),
+          value: 'scene',
+          groupValue: _writingMode,
+          onChanged: (value) {
+            setState(() {
+              _writingMode = value!;
+            });
+          },
+        ),
+      ],
+    );
+  }
   
   Future<void> _createBook() async {
     if (_titleController.text.trim().isEmpty) {
