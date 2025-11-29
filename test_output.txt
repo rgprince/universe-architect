@@ -1,0 +1,32 @@
+00:00 +0: loading /home/prince/anti/universe_architect/test/widget_test.dart                                                                                                                           00:01 +0: loading /home/prince/anti/universe_architect/test/widget_test.dart                                                                                                                           00:02 +0: loading /home/prince/anti/universe_architect/test/widget_test.dart                                                                                                                           00:03 +0: loading /home/prince/anti/universe_architect/test/widget_test.dart                                                                                                                           00:04 +0: loading /home/prince/anti/universe_architect/test/widget_test.dart                                                                                                                           00:04 +0: EditorScreen Tests toggles HTML view                                                                                                                                                         00:05 +0: EditorScreen Tests toggles HTML view                                                                                                                                                         00:06 +0: EditorScreen Tests toggles HTML view                                                                                                                                                         00:07 +0: EditorScreen Tests toggles HTML view                                                                                                                                                         00:07 +0: EditorScreen Tests toggles HTML view                                                                                                                                                         
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 2 widgets with icon "IconData(U+0E176)": [
+  Icon(IconData(U+0E176), size: 24.0, dependencies: [Directionality, IconTheme]),
+  Icon(IconData(U+0E176), dependencies: [Directionality, IconTheme]),
+]" (used in a call to "tap()") ambiguously found multiple matching widgets. The "tap()" method needs
+a single target.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:1895:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1792:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1040:18)
+#3      main.<anonymous closure>.<anonymous closure> (file:///home/prince/anti/universe_architect/test/widget_test.dart:133:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1032:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  toggles HTML view
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:07 +0 -1: EditorScreen Tests toggles HTML view [E]                                                                                                                                                  
+  Test failed. See exception logs above.
+  The test description was: toggles HTML view
+  
+
+To run this test again: /home/prince/anti/flutter/bin/cache/dart-sdk/bin/dart test /home/prince/anti/universe_architect/test/widget_test.dart -p vm --plain-name 'EditorScreen Tests toggles HTML view'
+00:07 +0 -1: Some tests failed.                                                                                                                                                                        
